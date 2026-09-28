@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Text Blur · Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbfbf9;--paper:#ffffff;--soft:#f5f4f1;--line:#ebeae6;--line2:#e2e1dc;
+  --ink:#16161a;--ink2:#4b4b55;--muted:#8a8a94;--accent:#7935fe;--accent-soft:#f3eeff;
+  --r:20px;--shadow:0 1px 2px rgba(20,20,30,.04),0 8px 28px rgba(20,20,30,.05);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;font-size:16px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:none}
+/* hover: a quick blur wave through the letters */
+a .ch{display:inline-block;white-space:pre}
+a.bw .ch{animation:bw .55s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--i) * 22ms)}
+@keyframes bw{0%{filter:blur(0);opacity:1;transform:none}35%{filter:blur(3.5px);opacity:.45;transform:translateY(1px)}100%{filter:blur(0);opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){a.bw .ch{animation:none}}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+section{padding:88px 0}
+section+section{border-top:1px solid var(--line)}
+h1,h2,h3{margin:0;line-height:1.2;letter-spacing:-.02em}
+h2{font-size:clamp(28px,3.4vw,38px);font-weight:700;margin-bottom:12px}
+h3{font-size:17px;font-weight:650}
+.lead{color:var(--ink2);font-size:17px;max-width:680px;margin:0 0 36px}
+.kicker{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:#3a2a6b}
+pre.code{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:12px 14px;white-space:pre-wrap;word-break:break-all;margin:10px 0 0;color:#3a3a44}
+.pill{display:inline-flex;align-items:center;border:1px solid var(--line2);background:var(--paper);border-radius:99px;padding:5px 13px;font-size:13px;color:var(--ink2)}
+
+/* nav */
+nav.top{position:sticky;top:0;z-index:20;background:rgba(251,251,249,.86);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid var(--line)}
+nav.top .wrap{display:flex;align-items:center;gap:22px;height:60px;overflow-x:auto;scrollbar-width:none}
+nav.top .brand{font-weight:800;letter-spacing:.06em;font-size:14px;white-space:nowrap;margin-right:8px}
+nav.top .brand span{color:var(--accent)}
+nav.top a{color:var(--ink2);font-size:14px;white-space:nowrap}
+nav.top a:hover{color:var(--ink);text-decoration:none}
+
+/* hero */
+.hero{padding:96px 0 88px}
+.hero .grid{display:grid;grid-template-columns:.9fr 1.2fr;gap:48px;align-items:center}
+#heroStage{min-height:460px}
+.hero h1{font-size:clamp(52px,7vw,88px);font-weight:800;letter-spacing:-.045em;line-height:1}
+.hero h1 span{color:var(--accent)}
+.hero p{color:var(--ink2);font-size:18px;margin:20px 0 26px;max-width:520px}
+.hero .meta{display:flex;flex-wrap:wrap;gap:8px}
+
+/* stages */
+.stage{position:relative;background:linear-gradient(165deg,#faf8ff 0%,#ffffff 55%,#fdfaf3 100%);border:1px solid var(--line);border-radius:26px;min-height:360px;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:var(--shadow)}
+.stage .orb{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55}
+.demo-line{position:relative;z-index:1;font-weight:800;letter-spacing:-.035em;color:var(--ink);text-align:center;line-height:1.08;white-space:nowrap}
+.demo-line .u{display:inline-block;will-change:transform,opacity,filter}
+.demo-line .last{color:inherit}
+.hero h1 .blurword{color:var(--accent);white-space:nowrap}
+.hero h1 .blurword i{font-style:normal;display:inline-block}
+.scene{position:absolute;left:16px;top:14px;z-index:2;font-size:12px;font-weight:600;color:var(--ink2);background:var(--paper);border:1px solid var(--line2);border-radius:99px;padding:4px 11px;transition:opacity .35s ease,filter .35s ease}
+.scene.swap{opacity:0;filter:blur(4px)}
+.demo-line[dir=rtl]{font-family:Cairo,sans-serif;letter-spacing:0}
+.replay{position:absolute;right:12px;bottom:12px;z-index:2;background:var(--paper);color:var(--ink2);border:1px solid var(--line2);border-radius:99px;font:500 12px Inter,sans-serif;padding:5px 12px;cursor:pointer;transition:color .15s,border-color .15s}
+.replay:hover{color:var(--ink);border-color:#cfcec8}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;counter-reset:s}
+.step{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px;position:relative;box-shadow:var(--shadow)}
+.step:before{counter-increment:s;content:counter(s);display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:12.5px;margin-bottom:14px}
+.step h3{margin-bottom:6px}
+.step p{margin:0;color:var(--ink2);font-size:15px}
+
+/* preset gallery */
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:18px}
+.pcard{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:box-shadow .25s ease,transform .3s cubic-bezier(.16,1,.3,1)}
+.pcard:hover{transform:translateY(-2px);box-shadow:0 1px 2px rgba(20,20,30,.04),0 16px 40px rgba(20,20,30,.08)}
+.pcard .stage{border:0;border-bottom:1px solid var(--line);border-radius:0;min-height:176px;box-shadow:none}
+.pcard .body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.pcard .head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pcard .name{font-weight:700;font-size:17px;letter-spacing:-.01em}
+.pcard .desc{color:var(--ink2);font-size:14.5px;margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:8px}
+.chip{font-size:11.5px;font-weight:500;color:var(--ink2);background:var(--soft);border:1px solid var(--line);border-radius:7px;padding:2px 8px}
+.curve{width:62px;height:38px;flex:0 0 auto;background:var(--soft);border:1px solid var(--line);border-radius:8px}
+.use{font-size:13px;color:var(--muted)}
+
+/* playground */
+.play{display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:16px;position:sticky;top:78px;box-shadow:var(--shadow)}
+.panel .tabs{display:flex;gap:4px;background:var(--soft);border-radius:10px;padding:4px;margin:10px 0 8px}
+.panel .tabs button{flex:1;border:0;background:transparent;color:var(--ink2);font:600 13px Inter,sans-serif;padding:7px 0;border-radius:7px;cursor:pointer}
+.panel .tabs button[aria-selected=true]{background:var(--paper);color:var(--ink);box-shadow:0 1px 3px rgba(20,20,30,.08)}
+.row{display:grid;grid-template-columns:104px 1fr 48px;align-items:center;gap:8px;margin:9px 0}
+.row label{font-size:13px;color:var(--ink2)}
+.row input[type=range]{width:100%;accent-color:var(--accent)}
+.row .val{font-size:12.5px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+.row select,.row input[type=text]{grid-column:2/4;background:var(--paper);color:var(--ink);border:1px solid var(--line2);border-radius:8px;padding:6px 8px;font:500 13px Inter,sans-serif}
+.checks{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px}
+.checks label{font-size:13px;color:var(--ink2);display:flex;gap:6px;align-items:center}
+.checks input{accent-color:var(--accent)}
+.presetsel{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.presetsel button{min-width:0;overflow:hidden;white-space:nowrap;background:var(--paper);border:1px solid var(--line);border-radius:9px;color:var(--ink2);font:500 10.5px Inter,sans-serif;padding:6px 2px 5px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .15s,color .15s}
+.presetsel button svg{width:42px;height:22px;color:#b8b7c2}
+.presetsel button[aria-pressed=true]{border-color:var(--accent);color:var(--ink);background:var(--accent-soft)}
+.presetsel button[aria-pressed=true] svg{color:var(--accent)}
+.play>*,.hero .grid>*,.two>*{min-width:0}
+.playstage{min-height:430px}
+.textin{width:100%;margin-top:12px;background:var(--paper);border:1px solid var(--line2);color:var(--ink);border-radius:12px;padding:11px 14px;font:500 15px Inter,sans-serif}
+.applybtn{width:100%;margin-top:14px;background:var(--ink);color:#fff;border:0;border-radius:10px;font:600 13px Inter,sans-serif;letter-spacing:.03em;padding:11px;cursor:pointer}
+.applybtn:hover{background:#2a2a31}
+
+/* tables */
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--paper);box-shadow:var(--shadow)}
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px}
+.tbl th,.tbl td{padding:13px 16px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl th{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:#fcfcfb}
+.tbl td:first-child{font-weight:600;white-space:nowrap}
+.tbl td{color:var(--ink2)}
+.tbl td:first-child{color:var(--ink)}
+.tbl .rng{font-size:12.5px;font-weight:500;color:var(--accent);white-space:nowrap}
+h3.sub{margin:40px 0 12px;font-size:15px;font-weight:600;color:var(--ink2)}
+
+/* after-motion */
+.am{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.am .stage{min-height:140px;border-radius:16px}
+.am .cap{font-weight:600;font-size:14px;margin:10px 2px 0}
+.am .sub{font-size:13.5px;color:var(--ink2);margin:2px 2px 0}
+.ramp{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px;margin-top:22px;box-shadow:var(--shadow)}
+.ramp svg{width:100%;height:auto;display:block}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.box{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:24px;box-shadow:var(--shadow)}
+ul.clean{margin:10px 0 0;padding-left:18px;color:var(--ink2);font-size:15px}
+ul.clean li{margin:6px 0}
+
+footer{padding:72px 0 84px;border-top:1px solid var(--line);text-align:center}
+footer .by{font-weight:700;font-size:22px;letter-spacing:-.02em}
+footer .links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+footer .links a{background:var(--paper);border:1px solid var(--line2);border-radius:99px;padding:9px 18px;color:var(--ink);font-weight:500;font-size:14px;transition:border-color .15s}
+footer .links a:hover{border-color:var(--ink);text-decoration:none}
+
+@media (max-width:880px){
+  .hero .grid,.play,.two{grid-template-columns:1fr}
+  .panel{position:static}
+  section{padding:64px 0}
+  .hero{padding:64px 0}
+}
+@media (prefers-reduced-motion:reduce){.pcard{transition:none}}
+</style>
+</head>
+<body>
+
+<nav class="top"><div class="wrap">
+  <span class="brand">TEXT <span>BLUR</span></span>
+  <a href="#install">Install</a>
+  <a href="#use">How to use</a>
+  <a href="#styles">Styles</a>
+  <a href="#play">Playground</a>
+  <a href="#settings">Settings</a>
+  <a href="#after">After motion</a>
+  <a href="#controls">Effect Controls</a>
+  <a href="#tips">Tips</a>
+</div></nav>
+
+<header class="hero"><div class="wrap grid">
+  <div>
+    <span class="kicker">After Effects script · v2.4</span>
+    <h1>Text <span class="blurword" aria-label="Blur"><i aria-hidden="true">B</i><i aria-hidden="true" style="filter:url(#hb1)">l</i><i aria-hidden="true" style="filter:url(#hb2)">u</i><i aria-hidden="true" style="filter:url(#hb3)">r</i></span></h1>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+      <filter id="hb1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0.8 0.4"><animate attributeName="stdDeviation" values="0.8 0.4;1.3 0.6;0.8 0.4" dur="4.5s" repeatCount="indefinite"/></feGaussianBlur></filter>
+      <filter id="hb2" x="-60%" y="-50%" width="220%" height="200%"><feGaussianBlur stdDeviation="2.6 1.3"><animate attributeName="stdDeviation" values="2.6 1.3;3.6 1.7;2.6 1.3" dur="4.5s" repeatCount="indefinite"/></feGaussianBlur></filter>
+      <filter id="hb3" x="-120%" y="-60%" width="340%" height="220%"><feGaussianBlur stdDeviation="7 3"><animate attributeName="stdDeviation" values="7 3;9.5 3.8;7 3" dur="4.5s" repeatCount="indefinite"/></feGaussianBlur></filter>
+    </defs></svg>
+    <p>Blur reveals for After Effects, word by word or letter by letter, in one click. Twelve ready-made styles, every setting on a slider, and no keyframes: move or trim the layer and the animation follows.</p>
+    <div class="meta">
+      <span class="pill">12 styles</span>
+      <span class="pill">Words or letters</span>
+      <span class="pill">Flow-style speed curves</span>
+      <span class="pill">After motion</span>
+      <span class="pill">By Mohamed Mostafa</span>
+    </div>
+  </div>
+  <div class="stage" id="heroStage">
+    <div class="orb" style="width:320px;height:320px;background:#e4d8ff;top:-90px;left:-70px"></div>
+    <div class="orb" style="width:260px;height:260px;background:#ffeccf;bottom:-100px;right:-50px"></div>
+    <span class="scene" id="heroScene">Soft Rise</span>
+    <div class="demo-line" data-demo="hero" style="font-size:64px">Plan it.<br>Approve it.<br>Ship it.</div>
+    <button class="replay" data-replay="hero">↻ Replay</button>
+  </div>
+</div></header>
+
+<section id="install"><div class="wrap">
+  <span class="kicker">Install</span>
+  <h2>Installation</h2>
+  <p class="lead">Text Blur is a single file, <code>TextBlur.jsx</code>. Install it as a dockable panel, or run it once without installing.</p>
+  <div class="steps">
+    <div class="step"><h3>Copy the file</h3><p>Put <code>TextBlur.jsx</code> in the ScriptUI Panels folder:</p>
+      <pre class="code">Windows
+C:\Program Files\Adobe\Adobe After Effects &lt;version&gt;\Support Files\Scripts\ScriptUI Panels\
+
+macOS
+/Applications/Adobe After Effects &lt;version&gt;/Scripts/ScriptUI Panels/</pre></div>
+    <div class="step"><h3>Restart After Effects</h3><p>Open it from the <b>Window</b> menu (<code>TextBlur.jsx</code>) and dock it next to Effect Controls.</p></div>
+    <div class="step"><h3>Allow links to open</h3><p>In <b>Preferences → Scripting &amp; Expressions</b>, turn on <b>Allow Scripts to Write Files and Access Network</b>. The tool works without it; only the social buttons will show the link to copy instead.</p></div>
+    <div class="step"><h3>No install needed</h3><p>Or use <b>File → Scripts → Run Script File…</b> and pick the file. It opens as a floating window.</p></div>
+  </div>
+</div></section>
+
+<section id="use"><div class="wrap">
+  <span class="kicker">How to use</span>
+  <h2>Four steps</h2>
+  <p class="lead">The panel has four tabs: <b>Styles</b>, <b>Motion</b>, <b>Look</b> and <b>About</b>. The action buttons stay visible below them.</p>
+  <div class="steps">
+    <div class="step"><h3>Select your text</h3><p>Click one or more text layers in the timeline. Text Blur works on text layers only.</p></div>
+    <div class="step"><h3>Pick a style</h3><p>In <b>Styles</b>, click a tile. Every field in Motion and Look fills in, and a short description appears under the grid.</p></div>
+    <div class="step"><h3>Fine-tune (optional)</h3><p>Adjust any slider in Motion or Look. Every style works as it is.</p></div>
+    <div class="step"><h3>Apply</h3><p>Press <b>Apply to selected text</b>, move the time indicator to the layer's first frame and press <b>Space</b> to preview.</p></div>
+  </div>
+</div></section>
+
+<section id="styles"><div class="wrap">
+  <span class="kicker">12 presets</span>
+  <h2>The styles</h2>
+  <p class="lead">Each card runs the style with the same math the script uses in After Effects: the same speed curve, direction, blur and after motion. Press Replay to watch it again.</p>
+  <div class="gallery" id="gallery"></div>
+</div></section>
+
+<section id="play"><div class="wrap">
+  <span class="kicker">Playground</span>
+  <h2>Try it</h2>
+  <p class="lead">A small copy of the panel itself. Move any slider and the preview updates instantly. Type your own line below to see it in that style.</p>
+  <div class="play">
+    <div class="panel">
+      <div class="presetsel" id="pgPresets"></div>
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="m">Motion</button>
+        <button role="tab" aria-selected="false" data-tab="l">Look</button>
+      </div>
+      <div data-pane="m">
+        <div class="row"><label>Direction</label><select id="c_dir"><option value="1">Up</option><option value="2">From left</option><option value="3">From right</option><option value="4">Center out</option><option value="5">Down</option></select></div>
+        <div class="row"><label>Animate by</label><select id="c_unit"><option value="w">Words</option><option value="c">Letters</option></select></div>
+        <div class="row"><label>Delay</label><input type="range" id="c_delay" min="0" max="3" step="0.05"><span class="val" id="v_delay"></span></div>
+        <div class="row"><label>Duration</label><input type="range" id="c_dur" min="0.1" max="2" step="0.01"><span class="val" id="v_dur"></span></div>
+        <div class="row"><label>Stagger</label><input type="range" id="c_st" min="0" max="0.3" step="0.005"><span class="val" id="v_st"></span></div>
+        <div class="row"><label>Speed curve</label><input type="text" id="c_curve"></div>
+        <div class="row"><label>After motion</label><select id="c_tail"><option value="0">None</option><option value="1">Slow zoom</option><option value="2">Drift</option><option value="3">Tracking breathe</option><option value="4">Float</option><option value="5">Slow zoom out</option></select></div>
+        <div class="row"><label>Motion amount</label><input type="range" id="c_tailAmt" min="0" max="20" step="0.1"><span class="val" id="v_tailAmt"></span></div>
+      </div>
+      <div data-pane="l" hidden>
+        <div class="row"><label>Blur</label><input type="range" id="c_blur" min="0" max="40" step="1"><span class="val" id="v_blur"></span></div>
+        <div class="row"><label>Distance</label><input type="range" id="c_dist" min="0" max="200" step="1"><span class="val" id="v_dist"></span></div>
+        <div class="row"><label>Start scale</label><input type="range" id="c_scale0" min="50" max="200" step="1"><span class="val" id="v_scale0"></span></div>
+        <div class="row"><label>Start tracking</label><input type="range" id="c_track0" min="0" max="150" step="1"><span class="val" id="v_track0"></span></div>
+        <div class="row"><label>Side fade width</label><input type="range" id="c_fadeW" min="20" max="400" step="1"><span class="val" id="v_fadeW"></span></div>
+        <div class="checks"><label><input type="checkbox" id="c_fade"> Side fade edges</label><label><input type="checkbox" id="c_pop"> Pop last word</label></div>
+      </div>
+      <button class="applybtn" id="pgReplay">↻ Replay</button>
+    </div>
+    <div>
+      <div class="stage playstage" id="pgStage">
+        <div class="orb" style="width:360px;height:360px;background:#e8dcff;top:-100px;left:-90px"></div>
+        <div class="orb" style="width:300px;height:300px;background:#ffefd3;bottom:-120px;right:-70px"></div>
+        <div class="demo-line" data-demo="pg" style="font-size:60px"></div>
+      </div>
+      <input class="textin" id="pgText" value="Every word, perfectly timed." aria-label="Preview text">
+    </div>
+  </div>
+</div></section>
+
+<section id="settings"><div class="wrap">
+  <span class="kicker">Settings</span>
+  <h2>What every setting does</h2>
+  <p class="lead">Every number is a slider with its value next to it. You can also type an exact value, even beyond the slider's range. Hover any setting in the panel for the same explanation.</p>
+  <h3 class="sub">Motion tab</h3>
+  <div class="tblwrap"><table class="tbl">
+    <tr><th>Setting</th><th>Range</th><th>What it does</th></tr>
+    <tr><td>Direction</td><td class="rng">Up · From left · From right · Center out · Down</td><td>Where each word comes from. <b>Up</b> rises from below. <b>From left / From right</b> slide in sideways with a horizontal, motion-style blur (From right suits Arabic). <b>Center out</b> reveals the middle word first, then outward. <b>Down</b> falls from above.</td></tr>
+    <tr><td>Animate by</td><td class="rng">Words · Letters</td><td>Each word moves as one piece, or each letter moves on its own. With letters, use a small Stagger such as 0.02.</td></tr>
+    <tr><td>Delay</td><td class="rng">0 – 3 s</td><td>How long to wait after the layer starts before the first word appears.</td></tr>
+    <tr><td>Duration</td><td class="rng">0.1 – 2 s</td><td>How long <b>one</b> word (or letter) takes to fully appear. 0.5 is half a second.</td></tr>
+    <tr><td>Stagger</td><td class="rng">0 – 0.3 s</td><td>The gap between one word and the next. Smaller means the line finishes faster; 0 means all at once.</td></tr>
+    <tr><td>Speed curve</td><td class="rng">x1, y1, x2, y2</td><td>A cubic-bezier easing in the same format as Flow and CSS. <code>0.16, 1, 0.3, 1</code> is a fast start with a very soft landing. A y value above 1 overshoots slightly, which reads as a bounce.</td></tr>
+    <tr><td>After motion</td><td class="rng">None · Slow zoom · Slow zoom out · Drift · Tracking breathe · Float</td><td>A soft extra move that starts halfway through the reveal and builds up gradually, so the line never looks frozen. <a href="#after">Details below ↓</a></td></tr>
+    <tr><td>Motion amount</td><td class="rng">0 – 20</td><td>Strength of the after motion: Slow zoom and Slow zoom out 1–2 (% per second), Drift 6–14 (px per second), Tracking 2–6, Float 3–8 (px). 0 turns it off.</td></tr>
+  </table></div>
+  <h3 class="sub">Look tab</h3>
+  <div class="tblwrap"><table class="tbl">
+    <tr><th>Setting</th><th>Range</th><th>What it does</th></tr>
+    <tr><td>Blur</td><td class="rng">0 – 40</td><td>How blurry each word starts; it always ends at 0. 6 is subtle, 14 is clearly visible, 25 and above feels dreamy.</td></tr>
+    <tr><td>Distance</td><td class="rng">0 – 200 px</td><td>How far each word travels while it appears. 0 keeps it in place.</td></tr>
+    <tr><td>Start scale</td><td class="rng">50 – 200 %</td><td>The size each word starts at. 100 is normal; 118 starts bigger and shrinks into place, as in Focus Pull.</td></tr>
+    <tr><td>Start tracking</td><td class="rng">0 – 150</td><td>Extra letter spacing at the start. 60 makes letters start apart and pull together.</td></tr>
+    <tr><td>Side fade width</td><td class="rng">20 – 400 px</td><td>How wide the soft fade is at each end of the line. Only used when Side fade edges is on.</td></tr>
+    <tr><td>Side fade edges</td><td class="rng">on / off</td><td>Softly fades the left and right ends of the line, so words glide in through a soft edge. The typical SaaS-video look.</td></tr>
+    <tr><td>Pop last word</td><td class="rng">on / off</td><td>The last word (or letter) lands with a small 110% → 100% scale hit. Pairs well with a colored final word.</td></tr>
+  </table></div>
+  <h3 class="sub">Buttons</h3>
+  <div class="tblwrap"><table class="tbl">
+    <tr><th>Button</th><th>What it does</th></tr>
+    <tr><td>Apply to selected text</td><td>Adds the reveal to every selected text layer. Applying again replaces the previous Text Blur on that layer.</td></tr>
+    <tr><td>Exit here</td><td>The whole line leaves (blur and fade, in its entry direction) starting at the current time indicator. To cancel, set <code>TB Out At (s)</code> to −1.</td></tr>
+    <tr><td>Remove</td><td>Removes everything Text Blur added. Your text itself is not changed.</td></tr>
+  </table></div>
+</div></section>
+
+<section id="after"><div class="wrap">
+  <span class="kicker">After motion</span>
+  <h2>Motion after the reveal</h2>
+  <p class="lead">A subtle move that keeps the line alive. It doesn't wait for the last word. It starts <b>halfway through the reveal</b> at zero speed and eases up to full speed about a second after the text lands, so the reveal and the move read as one continuous motion.</p>
+  <div class="am" id="amGrid"></div>
+  <div class="ramp">
+    <h3 style="margin-bottom:4px">Speed over time</h3>
+    <p class="use" style="margin:0 0 12px">Example: four words, Duration 0.5, Stagger 0.09. The reveal takes 0.77 s.</p>
+    <svg viewBox="0 0 720 220" id="rampSvg" aria-label="After-motion speed over time"></svg>
+  </div>
+</div></section>
+
+<section id="controls"><div class="wrap">
+  <span class="kicker">Effect Controls · F3</span>
+  <h2>Editing after you apply</h2>
+  <p class="lead">Text Blur doesn't create keyframes. It adds controls whose names start with <code>TB</code>. Change them any time in Effect Controls (select the layer and press <b>F3</b>), and the change shows immediately.</p>
+  <div class="tblwrap"><table class="tbl">
+    <tr><th>Control</th><th>Value</th><th>Controls</th></tr>
+    <tr><td>TB Direction</td><td class="rng">1 – 5</td><td>1 Up · 2 From left · 3 From right · 4 Center out · 5 Down</td></tr>
+    <tr><td>TB Delay (s)</td><td class="rng">seconds</td><td>Wait before the first word</td></tr>
+    <tr><td>TB Duration (s)</td><td class="rng">seconds</td><td>Duration of each word</td></tr>
+    <tr><td>TB Stagger (s)</td><td class="rng">seconds</td><td>Gap between words</td></tr>
+    <tr><td>TB Distance (px)</td><td class="rng">px</td><td>Travel distance</td></tr>
+    <tr><td>TB Blur</td><td class="rng">0+</td><td>Blur strength</td></tr>
+    <tr><td>TB Start Scale (%)</td><td class="rng">%</td><td>Starting size</td></tr>
+    <tr><td>TB Start Tracking</td><td class="rng">0+</td><td>Starting letter spacing</td></tr>
+    <tr><td>TB Curve X1 / Y1 / X2 / Y2</td><td class="rng">bezier</td><td>Speed curve</td></tr>
+    <tr><td>TB After Motion (0-5)</td><td class="rng">0 – 5</td><td>0 None · 1 Slow zoom · 2 Drift · 3 Tracking breathe · 4 Float · 5 Slow zoom out</td></tr>
+    <tr><td>TB After Motion Amount</td><td class="rng">0+</td><td>Strength of the after motion</td></tr>
+    <tr><td>TB Out At (s)</td><td class="rng">seconds / −1</td><td>Exit time; −1 means no exit</td></tr>
+    <tr><td>TB Side Fade (px)</td><td class="rng">px</td><td>Side fade width</td></tr>
+    <tr><td>TB Pop Last</td><td class="rng">on / off</td><td>Last-word pop</td></tr>
+  </table></div>
+  <p class="use" style="margin-top:14px">You'll also see the text animators <code>TB Reveal</code>, <code>TB Pop</code> and <code>TB After Tracking</code>, a mask called <code>TB Side Fade</code> and an effect called <code>TB Exit Blur</code>. They're driven by the controls above, so leave them as they are.</p>
+</div></section>
+
+<section id="tips"><div class="wrap">
+  <span class="kicker">Tips</span>
+  <h2>Tips and troubleshooting</h2>
+  <div class="two">
+    <div class="box"><h3>For the best look</h3>
+      <ul class="clean">
+        <li>Use a heavy typeface such as Inter ExtraBold with tracking around −40.</li>
+        <li>Color the last word and turn on <b>Pop last word</b>.</li>
+        <li>Enable Motion Blur on the layer for smoother sideways moves.</li>
+        <li>For Arabic, use <b>Slide RTL</b> or <b>From right</b>, and animate by <b>Words</b> so letters stay connected.</li>
+        <li>For one to three words, try <b>Center Bloom</b> or <b>Focus Pull</b>.</li>
+        <li>For music, use <b>Snap Pop</b> with a Stagger that matches the beat.</li>
+      </ul></div>
+    <div class="box"><h3>If something is off</h3>
+      <ul class="clean">
+        <li><b>No motion?</b> Move the time indicator to the layer's first frame and press Space. The reveal starts where the layer starts.</li>
+        <li><b>"Select TEXT layers"?</b> Click a text layer in the timeline before Apply.</li>
+        <li><b>Links don't open?</b> Turn on Allow Scripts to Write Files and Access Network.</li>
+        <li><b>Panel too tall?</b> Drag its edge, or dock it in a wider spot.</li>
+        <li><b>Want a clean start?</b> Press Remove, then Apply.</li>
+        <li><b>Changed the text?</b> No need to reapply. The timing updates automatically.</li>
+      </ul></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="by">Made by Mohamed Mostafa</div>
+  <div class="use" style="margin-top:6px">Text Blur v2.4 · After Effects script</div>
+  <div class="links">
+    <a href="https://www.linkedin.com/in/mohamed-m-omaar/" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://www.instagram.com/mohamed.mostafa.m.omar/" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://www.facebook.com/iMOKFA/" target="_blank" rel="noopener">Facebook</a>
+  </div>
+</div></footer>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="fdefs"></defs></svg>
+<script>
+
+(function(){
+'use strict';
+// ------------------------------------------------------------------ data (same as the script)
+var PRESETS=[
+ {name:'Soft Rise',unit:'w',dir:1,dur:.5,st:.09,blur:14,dist:38,scale0:100,track0:0,curve:[.16,1,.3,1],fade:false,pop:true,tail:1,tailAmt:1.2,
+  desc:'Each word fades in, rises 38 px and comes into focus, one after another. Calm and premium.',use:'Headlines, video openers'},
+ {name:'SaaS Slide',unit:'w',dir:2,dur:.6,st:.06,blur:18,dist:90,scale0:100,track0:0,curve:[.22,1,.36,1],fade:true,pop:false,tail:2,tailAmt:10,
+  desc:'Words glide in from the left with a horizontal motion blur, through softly faded edges, then the line keeps drifting slowly. The product-launch look.',use:'Product and SaaS videos'},
+ {name:'Slide RTL',unit:'w',dir:3,dur:.6,st:.06,blur:18,dist:90,scale0:100,track0:0,curve:[.22,1,.36,1],fade:true,pop:false,tail:2,tailAmt:10,
+  desc:'The same as SaaS Slide, from the right. Made for Arabic and other right-to-left text.',use:'Arabic and RTL text',rtl:true},
+ {name:'Center Bloom',unit:'w',dir:4,dur:.55,st:.07,blur:16,dist:24,scale0:100,track0:0,curve:[.33,1,.68,1],fade:false,pop:true,tail:1,tailAmt:1,
+  desc:'The middle word appears first and the rest open outward to both sides. Great for short headlines.',use:'Short headlines'},
+ {name:'Letter Mist',unit:'c',dir:1,dur:.45,st:.025,blur:10,dist:16,scale0:100,track0:0,curve:[.25,1,.5,1],fade:false,pop:false,tail:3,tailAmt:4,
+  desc:'Letter by letter, each one lifts out of a light mist. Delicate; works best on one to four words.',use:'A single word or a name'},
+ {name:'Focus Pull',unit:'w',dir:1,dur:.9,st:.1,blur:26,dist:0,scale0:118,track0:0,curve:[.19,1,.22,1],fade:false,pop:false,tail:5,tailAmt:1.5,
+  desc:'Words start large and very blurry, then settle into sharp focus, like a camera focus pull, and keep easing back. Cinematic.',use:'Cinematic openers'},
+ {name:'Snap Pop',unit:'w',dir:1,dur:.38,st:.05,blur:8,dist:30,scale0:100,track0:0,curve:[.34,1.56,.64,1],fade:false,pop:true,tail:0,tailAmt:0,
+  desc:'Fast and punchy. Each word overshoots a little and settles. Made for beat-synced edits.',use:'Fast, music-driven reels'},
+ {name:'Drop In',unit:'w',dir:5,dur:.55,st:.08,blur:14,dist:40,scale0:100,track0:0,curve:[.16,1,.3,1],fade:false,pop:false,tail:4,tailAmt:5,
+  desc:'Words fall softly from above, land in focus, then float gently.',use:'Subheadings'},
+ {name:'Tracking In',unit:'c',dir:1,dur:.9,st:0,blur:12,dist:0,scale0:100,track0:60,curve:[.16,1,.3,1],fade:false,pop:false,tail:3,tailAmt:3,
+  desc:'Letters start spread apart and blurred, pull together as they sharpen, then the spacing keeps breathing wider.',use:'Logos and names'},
+ {name:'Flow In-Out',unit:'w',dir:1,dur:.8,st:.08,blur:14,dist:34,scale0:100,track0:0,curve:[.7,.15,.54,.88],fade:false,pop:false,tail:0,tailAmt:0,
+  desc:'Slow start, fast middle, soft landing, using the Flow curve 0.70, 0.15, 0.54, 0.88. A calm, editorial feel.',use:'Calm, editorial pieces'},
+ {name:'Whisper',unit:'w',dir:1,dur:.7,st:.1,blur:6,dist:12,scale0:100,track0:0,curve:[.4,0,.2,1],fade:false,pop:false,tail:4,tailAmt:3,
+  desc:'Very subtle: a small blur and a small rise. For captions and secondary lines that should not shout.',use:'Captions and secondary lines'},
+ {name:'Side Wipe',unit:'c',dir:2,dur:.5,st:.018,blur:14,dist:40,scale0:100,track0:0,curve:[.22,1,.36,1],fade:true,pop:false,tail:2,tailAmt:8,
+  desc:'Letters sweep in from the left one by one with a horizontal blur, like a light passing across the line.',use:'Transitions between scenes'}
+];
+var DIRS=['Up','From left','From right','Center out','Down'];
+var TAILS=['None','Slow zoom','Drift','Tracking breathe','Float','Slow zoom out'];
+var SAMPLE={
+ 'Soft Rise':'Plan it. Ship it.','SaaS Slide':'Launch faster.','Slide RTL':'خطط. وافق. انشر.','Center Bloom':'One calm place',
+ 'Letter Mist':'Soft Letters','Focus Pull':'Made to focus','Snap Pop':'Fast. Bold. Loud.','Drop In':'Softly landing',
+ 'Tracking In':'TEXT BLUR','Flow In-Out':'Smooth by design','Whisper':'A quiet caption line','Side Wipe':'Light sweep'
+};
+var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ------------------------------------------------------------------ math (mirrors the AE expressions)
+function bz(x,a,b,c,d){if(x<=0)return 0;if(x>=1)return 1;var t=x;
+ for(var i=0;i<10;i++){var u=1-t;var cx=3*a*t*u*u+3*c*t*t*u+t*t*t-x;var dx=3*a*u*u+6*(c-a)*t*u+3*(1-c)*t*t;
+  if(Math.abs(cx)<1e-5)break;t=Math.abs(dx)<1e-6?t-cx*.5:t-cx/dx;t=Math.min(1,Math.max(0,t));}
+ var v=1-t;return 3*b*t*v*v+3*d*t*t*v+t*t*t;}
+function eio4(k){return k<.5?8*k*k*k*k:1-Math.pow(-2*k+2,4)/2;}
+function curveSVG(c,w,h,color,sw){var lo=-.25,hi=1.25,p='';for(var s=0;s<=40;s++){var t=s/40,u=1-t;var x=3*c[0]*t*u*u+3*c[2]*t*t*u+t*t*t,y=3*c[1]*t*u*u+3*c[3]*t*t*u+t*t*t;
+ p+=(s?'L':'M')+(4+x*(w-8)).toFixed(1)+' '+(h-2-((y-lo)/(hi-lo))*(h-4)).toFixed(1);}
+ return '<path d="'+p+'" fill="none" stroke="'+color+'" stroke-width="'+sw+'" stroke-linecap="round"/>';}
+
+// ------------------------------------------------------------------ demo engine
+var fid=0,defs=document.getElementById('fdefs');
+function Demo(line,cfg,opts){this.line=line;this.opts=opts||{};this.set(cfg,this.opts.text);}
+Demo.prototype.set=function(cfg,text){
+ this.cfg=cfg;var line=this.line;var txt=text!=null?text:(line.getAttribute('data-text')||line.textContent);
+ line.setAttribute('data-text',txt);line.innerHTML='';this.units=[];
+ var rtl=/[\u0600-\u06FF]/.test(txt);line.dir=rtl?'rtl':'ltr';
+ var lines=txt.split('\n');var self=this;
+ lines.forEach(function(ln,li){
+  var words=ln.split(/(\s+)/);
+  words.forEach(function(w){
+   if(!w)return; if(/^\s+$/.test(w)){line.appendChild(document.createTextNode(' '));return;}
+   if(cfg.unit==='c'&&!rtl){var ws=document.createElement('span');ws.style.whiteSpace='nowrap';
+     for(var i=0;i<w.length;i++){var s=document.createElement('span');s.className='u';s.textContent=w[i];ws.appendChild(s);self.units.push(s);}line.appendChild(ws);}
+   else{var s=document.createElement('span');s.className='u';s.textContent=w;line.appendChild(s);self.units.push(s);}
+  });
+  if(li<lines.length-1)line.appendChild(document.createElement('br'));
+ });
+ if(this.units.length)this.units[this.units.length-1].classList.add('last');
+ // fit the line inside its stage
+ if(!this.baseFs)this.baseFs=parseFloat(line.style.fontSize)||parseFloat(getComputedStyle(line).fontSize)||48;
+ var fs=this.baseFs;line.style.fontSize=fs+'px';line.style.paddingInline='0';line.style.transform='none';
+ var avail=(line.parentElement.clientWidth||600)*0.86;
+ while(line.scrollWidth>avail&&fs>16){fs-=2;line.style.fontSize=fs+'px';}
+ this.fs=fs;
+ this.k=this.fs/100; // AE values are tuned for ~100px text
+ this.t0=performance.now();
+};
+Demo.prototype.restart=function(){this.t0=performance.now();};
+Demo.prototype.hBlur=function(el,bx,by){
+ if(!el._f){var id='tbf'+(fid++);var f=document.createElementNS('http://www.w3.org/2000/svg','filter');f.setAttribute('id',id);f.setAttribute('x','-50%');f.setAttribute('width','200%');
+  var g=document.createElementNS('http://www.w3.org/2000/svg','feGaussianBlur');f.appendChild(g);defs.appendChild(f);el._f={id:id,g:g};}
+ el._f.g.setAttribute('stdDeviation',bx.toFixed(2)+' '+by.toFixed(2));el.style.filter=(bx<0.05&&by<0.05)?'none':'url(#'+el._f.id+')';
+};
+Demo.prototype.frame=function(now){
+ var c=this.cfg,n=this.units.length;if(!n)return;
+ var t=(now-this.t0)/1000;var m=c.dir;
+ var mx=(m===4)?Math.max(0,(n-1)/2):Math.max(0,n-1);
+ var tEnd=c.delay+mx*c.st+c.dur;var hold=this.opts.hold!=null?this.opts.hold:2.2;
+ var outAt=this.opts.noExit?-1:tEnd+hold;var cycle=this.opts.noExit?1e9:outAt+0.5+0.45;
+ if(this.opts.loop!==false&&t>cycle){if(this.opts.onCycle)this.opts.onCycle(this);else this.restart();c=this.cfg;n=this.units.length;if(!n)return;t=0;m=c.dir;mx=(m===4)?Math.max(0,(n-1)/2):Math.max(0,n-1);tEnd=c.delay+mx*c.st+c.dur;outAt=this.opts.noExit?-1:tEnd+hold;}
+ if(reduce){t=tEnd+.01;}
+ var k=this.k;
+ // after motion (starts halfway through the reveal, from zero speed)
+ var tS=c.delay+(mx*c.st+c.dur)*.5,R=Math.max(.3,(tEnd-tS)+.8),p=Math.max(0,t-tS),x=Math.min(1,p/R);
+ var pp=p<R?R*(x*x*x-x*x*x*x/2):R*.5+(p-R);var tt=c.tail,ta=c.tailAmt;
+ var e=0;if(outAt>=0){var ke=Math.min(1,Math.max(0,(t-outAt)/.5));e=eio4(ke);}
+ var dx=0,dy=0;
+ if(tt===2){if(m===2)dx+=ta*pp;else if(m===3)dx-=ta*pp;else if(m===5)dy+=ta*pp;else dy-=ta*pp;}
+ if(tt===4){dy+=Math.sin(p*1.9)*ta*x*x*(3-2*x);}
+ if(m===2)dx+=320*e;else if(m===3)dx-=320*e;else if(m===5)dy+=260*e;else dy-=260*e;
+ var z=(tt===1?1+ta/100*pp:(tt===5?Math.max(.5,1-ta/100*pp):1))*(1-.08*e);
+ var ls=(tt===3?ta*pp:0)*(1-e);
+ var L=this.line;L.style.transform='translate('+(dx*k).toFixed(2)+'px,'+(dy*k).toFixed(2)+'px) scale('+z.toFixed(4)+')';
+ L.style.opacity=(1-e).toFixed(3);L.style.filter=e>0.001?'blur('+(16*e*k).toFixed(2)+'px)':'none';
+ if(c.fade){var fw=Math.max(8,c.fadeW*k);L.style.webkitMaskImage=L.style.maskImage='linear-gradient(90deg,transparent 0,#000 '+fw+'px,#000 calc(100% - '+fw+'px),transparent 100%)';L.style.paddingInline=(fw*.35)+'px';}
+ else{L.style.webkitMaskImage=L.style.maskImage='none';L.style.paddingInline='0';}
+ // per unit reveal
+ for(var i=0;i<n;i++){var u=this.units[i];var idx=i+1;
+  var ix=(m===4)?Math.abs(idx-(n+1)/2):(idx-1);
+  var kk=Math.min(1,Math.max(0,(t-(c.delay+ix*c.st))/Math.max(.01,c.dur)));
+  var A=1-bz(kk,c.curve[0],c.curve[1],c.curve[2],c.curve[3]); // animator amount 0..1 (can go below 0 on overshoot)
+  var r=c.dist*k;var ox=0,oy=0;if(m===2)ox=-r*A;else if(m===3)ox=r*A;else if(m===5)oy=-r*A;else oy=r*A;
+  var sc=1+(c.scale0/100-1)*A;if(c.pop&&idx===n)sc*=1+.1*A;
+  u.style.transform='translate('+ox.toFixed(2)+'px,'+oy.toFixed(2)+'px) scale('+sc.toFixed(4)+')';
+  u.style.opacity=Math.max(0,Math.min(1,1-A)).toFixed(3);
+  var b=Math.max(0,c.blur*A)*k;
+  if(m===2||m===3)this.hBlur(u,b*1.8,b*.12);else u.style.filter=b>0.05?'blur('+b.toFixed(2)+'px)':'none';
+  u.style.letterSpacing=((c.track0*A+ls)/1000).toFixed(4)+'em';
+ }
+};
+function cfgOf(p){return {unit:p.unit,dir:p.dir,delay:0,dur:p.dur,st:p.st,blur:p.blur,dist:p.dist,scale0:p.scale0,track0:p.track0,curve:p.curve.slice(),tail:p.tail,tailAmt:p.tailAmt,fade:p.fade,fadeW:140,pop:p.pop};}
+
+var demos=[];var visible=new Set();
+var io='IntersectionObserver' in window?new IntersectionObserver(function(es){es.forEach(function(en){var d=en.target._demo;if(!d)return;if(en.isIntersecting){if(!visible.has(d)){visible.add(d);d.restart();}}else visible.delete(d);});},{threshold:.2}):null;
+function register(d,stage){demos.push(d);stage._demo=d;if(io)io.observe(stage);else visible.add(d);}
+
+// hero
+var heroLine=document.querySelector('[data-demo=hero]');
+// hero: a showreel that cycles through the strongest styles
+var HERO=[['Soft Rise','Plan it.\nApprove it.\nShip it.'],['SaaS Slide','Launch\nfaster.'],['Focus Pull','Made to\nfocus.'],['Tracking In','TEXT BLUR'],['Center Bloom','Every word\nlands softly.'],['Snap Pop','Fast.\nBold.\nLoud.'],['Side Wipe','Light sweep']];
+var heroIx=0,heroScene=document.getElementById('heroScene');
+function heroCfg(i){var p=PRESETS.filter(function(x){return x.name===HERO[i][0];})[0];return cfgOf(p);}
+var hero=new Demo(heroLine,heroCfg(0),{text:HERO[0][1],hold:1.5,onCycle:function(d){heroIx=(heroIx+1)%HERO.length;heroScene.classList.add('swap');setTimeout(function(){heroScene.textContent=HERO[heroIx][0];heroScene.classList.remove('swap');},200);d.set(heroCfg(heroIx),HERO[heroIx][1]);}});
+register(hero,document.getElementById('heroStage'));
+
+// gallery
+var gal=document.getElementById('gallery');
+PRESETS.forEach(function(p,i){
+ var card=document.createElement('article');card.className='pcard';
+ var dark=false;
+ card.innerHTML='<div class="stage'+(dark?' dark':'')+'"><div class="demo-line" style="font-size:'+(p.unit==='c'?40:36)+'px"></div><button class="replay">↻ Replay</button></div>'+
+  '<div class="body"><div class="head"><span class="name">'+p.name+'</span><svg class="curve" viewBox="0 0 66 42">'+curveSVG(p.curve,66,42,'#7935fe',1.8)+'</svg></div>'+
+  '<p class="desc">'+p.desc+'</p><div class="use">Best for: '+p.use+'</div>'+
+  '<div class="chips"><span class="chip">'+DIRS[p.dir-1]+'</span><span class="chip">'+(p.unit==='c'?'Letters':'Words')+'</span><span class="chip">'+p.dur+'s · stagger '+p.st+'</span><span class="chip">blur '+p.blur+'</span>'+
+  (p.dist?'<span class="chip">distance '+p.dist+'</span>':'')+(p.scale0!==100?'<span class="chip">scale '+p.scale0+'%</span>':'')+(p.track0?'<span class="chip">tracking '+p.track0+'</span>':'')+
+  (p.fade?'<span class="chip">side fade</span>':'')+(p.pop?'<span class="chip">pop</span>':'')+'<span class="chip">after: '+TAILS[p.tail]+'</span><span class="chip">'+p.curve.join(', ')+'</span></div></div>';
+ gal.appendChild(card);
+ var stage=card.querySelector('.stage');var d=new Demo(card.querySelector('.demo-line'),cfgOf(p),{text:SAMPLE[p.name]});
+ register(d,stage);card.querySelector('.replay').onclick=function(){d.restart();};
+});
+
+// after-motion row
+var amGrid=document.getElementById('amGrid');
+[[0,0,'None','The text holds still once it has appeared.'],[1,1.2,'Slow zoom','The line grows slowly. Amount = % per second (1–2).'],[2,10,'Drift','Keeps gliding in the entry direction. Amount = px per second (6–14).'],[3,4,'Tracking breathe','Letters slowly spread apart. Amount 2–6.'],[4,5,'Float','A gentle up-and-down. Amount = px (3–8).'],[5,1.2,'Slow zoom out','The line eases back and shrinks slowly. Amount = % per second (1–2).']].forEach(function(a,i){
+ var w=document.createElement('div');
+ w.innerHTML='<div class="stage"><div class="demo-line" style="font-size:30px"></div></div><div class="cap">'+a[2]+'</div><p class="sub">'+a[3]+'</p>';
+ amGrid.appendChild(w);var c=cfgOf(PRESETS[0]);c.tail=a[0];c.tailAmt=a[1]*((a[0]===1||a[0]===5)?2:(a[0]===2?1.6:1.2));c.pop=false;
+ var d=new Demo(w.querySelector('.demo-line'),c,{text:'Stay alive',hold:3.4});register(d,w.querySelector('.stage'));
+});
+
+// ramp chart
+(function(){var svg=document.getElementById('rampSvg');var W=720,H=220,l=46,r=16,t=18,b=38;var T=3;
+ var R0=.77,tS=R0*.5,R=Math.max(.3,(R0-tS)+.8);function sp(tm){var p=Math.max(0,tm-tS),x=Math.min(1,p/R);return p<R?x*x*(3-2*x):1;}
+ function X(tm){return l+tm/T*(W-l-r);}function Y(v){return H-b-v*(H-t-b);}
+ var path='';for(var i=0;i<=120;i++){var tm=i/120*T;path+=(i?'L':'M')+X(tm).toFixed(1)+' '+Y(sp(tm)).toFixed(1);}
+ var s='';
+ s+='<rect x="'+X(0)+'" y="'+t+'" width="'+(X(R0)-X(0))+'" height="'+(H-t-b)+'" fill="rgba(121,53,254,.07)" rx="6"/>';
+ s+='<text x="'+(X(R0/2))+'" y="'+(t+16)+'" fill="#7935fe" font-family="Inter" font-size="12" font-weight="700" text-anchor="middle">reveal</text>';
+ s+='<line x1="'+X(tS)+'" x2="'+X(tS)+'" y1="'+t+'" y2="'+(H-b)+'" stroke="#c9c9d1" stroke-dasharray="4 4"/>';
+ s+='<text x="'+(X(tS)+6)+'" y="'+(H-b-8)+'" fill="#6b6b76" font-family="Inter" font-size="11">after motion starts (mid-reveal)</text>';
+ s+='<line x1="'+X(R0)+'" x2="'+X(R0)+'" y1="'+t+'" y2="'+(H-b)+'" stroke="#c9c9d1" stroke-dasharray="4 4"/>';
+ s+='<text x="'+(X(R0)+6)+'" y="'+(t+34)+'" fill="#6b6b76" font-family="Inter" font-size="11">last word lands</text>';
+ s+='<line x1="'+l+'" x2="'+(W-r)+'" y1="'+(H-b)+'" y2="'+(H-b)+'" stroke="#e6e6ea"/><line x1="'+l+'" x2="'+l+'" y1="'+t+'" y2="'+(H-b)+'" stroke="#e6e6ea"/>';
+ [0,1,2,3].forEach(function(v){s+='<text x="'+X(v)+'" y="'+(H-b+18)+'" fill="#83838f" font-family="Inter" font-size="11" text-anchor="middle">'+v+'s</text>';});
+ s+='<text x="'+(l-8)+'" y="'+(Y(1)+4)+'" fill="#83838f" font-family="Inter" font-size="11" text-anchor="end">full</text><text x="'+(l-8)+'" y="'+(Y(0)+4)+'" fill="#83838f" font-family="Inter" font-size="11" text-anchor="end">0</text>';
+ s+='<path d="'+path+'" fill="none" stroke="#7935fe" stroke-width="3" stroke-linecap="round"/>';
+ s+='<text x="'+(W-r)+'" y="'+(Y(1)-8)+'" fill="#16161a" font-family="Inter" font-size="12" font-weight="700" text-anchor="end">after-motion speed</text>';
+ svg.innerHTML=s;})();
+
+// playground
+var pgLine=document.querySelector('[data-demo=pg]');var pgText=document.getElementById('pgText');
+var cur=cfgOf(PRESETS[1]);var pg=new Demo(pgLine,cur,{text:pgText.value,hold:2.6});register(pg,document.getElementById('pgStage'));
+var ids=['delay','dur','st','tailAmt','blur','dist','scale0','track0','fadeW'];
+function show(){ids.forEach(function(k){document.getElementById('v_'+k).textContent=(+cur[k]).toString();});}
+function load(p){cur=cfgOf(p);ids.forEach(function(k){document.getElementById('c_'+k).value=cur[k];});
+ document.getElementById('c_dir').value=cur.dir;document.getElementById('c_unit').value=cur.unit;document.getElementById('c_tail').value=cur.tail;
+ document.getElementById('c_curve').value=cur.curve.join(', ');document.getElementById('c_fade').checked=cur.fade;document.getElementById('c_pop').checked=cur.pop;
+ show();pg.set(cur,pgText.value);}
+var ps=document.getElementById('pgPresets');
+PRESETS.forEach(function(p,i){var b=document.createElement('button');b.type='button';b.innerHTML='<svg viewBox="0 0 44 24">'+curveSVG(p.curve,44,24,'currentColor',1.6)+'</svg>'+p.name;
+ b.setAttribute('aria-pressed',i===1?'true':'false');b.onclick=function(){[].forEach.call(ps.children,function(x){x.setAttribute('aria-pressed','false');});b.setAttribute('aria-pressed','true');load(p);};ps.appendChild(b);});
+ids.forEach(function(k){document.getElementById('c_'+k).addEventListener('input',function(e){cur[k]=parseFloat(e.target.value);show();pg.set(cur,pgText.value);});});
+document.getElementById('c_dir').onchange=function(e){cur.dir=+e.target.value;pg.set(cur,pgText.value);};
+document.getElementById('c_unit').onchange=function(e){cur.unit=e.target.value;pg.set(cur,pgText.value);};
+document.getElementById('c_tail').onchange=function(e){cur.tail=+e.target.value;cur.tailAmt=[0,1.2,10,4,5,1.2][cur.tail];document.getElementById('c_tailAmt').value=cur.tailAmt;show();pg.set(cur,pgText.value);};
+document.getElementById('c_curve').addEventListener('input',function(e){var a=e.target.value.replace(/[^0-9.,\-]/g,'').split(',').map(parseFloat);if(a.length===4&&a.every(function(v){return !isNaN(v);})&&a[0]>=0&&a[0]<=1&&a[2]>=0&&a[2]<=1){cur.curve=a;pg.set(cur,pgText.value);}});
+document.getElementById('c_fade').onchange=function(e){cur.fade=e.target.checked;pg.set(cur,pgText.value);};
+document.getElementById('c_pop').onchange=function(e){cur.pop=e.target.checked;pg.set(cur,pgText.value);};
+pgText.addEventListener('input',function(){pg.set(cur,pgText.value);});
+document.getElementById('pgReplay').onclick=function(){pg.restart();};
+document.querySelectorAll('.panel .tabs button').forEach(function(b){b.onclick=function(){document.querySelectorAll('.panel .tabs button').forEach(function(x){x.setAttribute('aria-selected',x===b?'true':'false');});
+ document.querySelectorAll('[data-pane]').forEach(function(p){p.hidden=p.getAttribute('data-pane')!==b.getAttribute('data-tab');});};});
+document.querySelector('[data-replay=hero]').onclick=function(){hero.restart();};
+// links: wrap letters so hover can run a blur wave through them
+document.querySelectorAll('a').forEach(function(a){
+ if(a.children.length)return;var txt=a.textContent;a.setAttribute('aria-label',txt);a.textContent='';
+ for(var i=0;i<txt.length;i++){var c=document.createElement('span');c.className='ch';c.setAttribute('aria-hidden','true');c.style.setProperty('--i',i);c.textContent=txt[i];a.appendChild(c);}
+ a.addEventListener('mouseenter',function(){a.classList.remove('bw');void a.offsetWidth;a.classList.add('bw');});
+ var last=a.lastChild;if(last)last.addEventListener('animationend',function(){a.classList.remove('bw');});
+});
+load(PRESETS[1]);
+
+// loop
+function tick(now){visible.forEach(function(d){d.frame(now);});requestAnimationFrame(tick);}
+requestAnimationFrame(tick);
+var rz;window.addEventListener('resize',function(){clearTimeout(rz);rz=setTimeout(function(){demos.forEach(function(d){d.set(d.cfg,d.line.getAttribute('data-text'));});},200);});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){demos.forEach(function(d){d.set(d.cfg,d.line.getAttribute('data-text'));});});
+})();
+</script>
+</body>
+</html>
